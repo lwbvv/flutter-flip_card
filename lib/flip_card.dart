@@ -105,6 +105,7 @@ class FlipCard extends StatefulWidget {
 
   @override
   State<StatefulWidget> createState() {
+    print('createState');
     return FlipCardState(this.side == CardSide.FRONT);
   }
 }
@@ -122,6 +123,7 @@ class FlipCardState extends State<FlipCard>
   @override
   void initState() {
     super.initState();
+    print('initState');
     controller = AnimationController(
       value: isFront ? 0.0 : 1.0,
       duration: Duration(milliseconds: widget.speed),
@@ -155,6 +157,26 @@ class FlipCardState extends State<FlipCard>
     ).animate(controller!);
 
     widget.controller?.state = this;
+  }
+
+  @override
+  void didUpdateWidget(FlipCard oldWidget) {
+    print('didUpdateWidget');
+  }
+
+  @override
+  void deactivate() {
+    print('deactivate');
+  }
+
+  @override
+  void activate() {
+    print('activate');
+  }
+
+  @override
+  void didChangeDependencies() {
+    print('didChangeDependencies');
   }
 
   /// Flip the card

@@ -1,3 +1,4 @@
+import 'package:flip_card/flip_card_controller.dart';
 import 'package:flutter/material.dart';
 
 import 'package:flip_card/flip_card.dart';
@@ -16,7 +17,16 @@ class MyApp extends StatelessWidget {
   }
 }
 
-class HomePage extends StatelessWidget {
+class HomePage extends StatefulWidget {
+  const HomePage({Key key}) : super(key: key);
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  bool reRender = true;
+
   _renderBg() {
     return Container(
       decoration: BoxDecoration(color: const Color(0xFFFFFFFF)),
@@ -35,51 +45,84 @@ class HomePage extends StatelessWidget {
   }
 
   _renderContent(context) {
-    return Card(
-      elevation: 0.0,
-      margin: EdgeInsets.only(left: 32.0, right: 32.0, top: 20.0, bottom: 0.0),
-      color: Color(0x00000000),
-      child: FlipCard(
-        direction: FlipDirection.HORIZONTAL,
-        side: CardSide.FRONT,
-        speed: 1000,
-        onFlipDone: (status) {
-          print(status);
-        },
-        front: Container(
-          decoration: BoxDecoration(
-            color: Color(0xFF006666),
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('Front', style: Theme.of(context).textTheme.headline1),
-              Text('Click here to flip back',
-                  style: Theme.of(context).textTheme.bodyText1),
-            ],
-          ),
-        ),
-        back: Container(
-          decoration: BoxDecoration(
-            color: Color(0xFF006666),
-            borderRadius: BorderRadius.all(Radius.circular(8.0)),
-          ),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Text('Back', style: Theme.of(context).textTheme.headline1),
-              Text('Click here to flip front',
-                  style: Theme.of(context).textTheme.bodyText1),
-            ],
-          ),
-        ),
-      ),
+    String text = 'Click';
+    return Column(
+      children: [
+        __renderCart(context, '1', FlipCardController()),
+        __renderCart(context, '2', FlipCardController()),
+        __renderCart(context, '3', FlipCardController()),
+        __renderCart(context, '4', FlipCardController()),
+        GestureDetector(
+          onTap: () {
+            _reRender();
+          },
+          child: Text('$text $reRender', style: TextStyle(fontSize: 20, color: Colors.black),),
+        )
+      ],
     );
+  }
+
+  Widget __renderCart(BuildContext context, String key, FlipCardController controller) {
+    return Row(
+      children: [
+        FlipCard(
+          key: Key('1'),
+          controller: controller,
+          direction: FlipDirection.HORIZONTAL,
+          side: CardSide.FRONT,
+          speed: 1000,
+          onFlipDone: (status) {
+            print(status);
+          },
+          front: Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              color: Color(0xFF006666),
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Front', style: Theme.of(context).textTheme.bodyText1),
+              ],
+            ),
+          ),
+          back: Container(
+            height: 100,
+            width: 100,
+            decoration: BoxDecoration(
+              color: Color(0xFF006666),
+              borderRadius: BorderRadius.all(Radius.circular(8.0)),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Text('Back', style: Theme.of(context).textTheme.bodyText1),
+              ],
+            ),
+          ),
+        ),
+        SizedBox(width: 10),
+        GestureDetector(
+          onTap: () {
+            controller.toggleCard();
+          },
+          child: Text('Flip', style: TextStyle(fontSize: 20, color: Colors.black),),
+        )
+      ],
+    );
+  }
+
+  _reRender() {
+    setState(() {
+      reRender = !reRender;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    print('build');
     return Scaffold(
       appBar: AppBar(
         title: Text('FlipCard'),
@@ -88,18 +131,11 @@ class HomePage extends StatelessWidget {
         fit: StackFit.expand,
         children: <Widget>[
           _renderBg(),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
+          Flex(
+            direction: Axis.vertical,
             children: <Widget>[
               _renderAppBar(context),
-              Expanded(
-                flex: 4,
-                child: _renderContent(context),
-              ),
-              Expanded(
-                flex: 1,
-                child: Container(),
-              ),
+              _renderContent(context)
             ],
           )
         ],
